@@ -6,3 +6,5 @@ A lil' rapper for your WebGL.
 * Set your own damn uniforms!
 
 A an extremely lightweight, low level, wrapper for WebGL.  Great for perf testing.
+
+Work in progress.

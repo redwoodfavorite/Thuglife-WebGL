@@ -1,0 +1,27 @@
+{
+  "name": "thuglife-webgl",
+  "version": "1.0.2",
+  "description": "A low-level WebGL wrapper good for perf testing and prototyping.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/redwoodfavorite/thuglife-webgl.git"
+  },
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  },
+  "author": "redwoodfavorite",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/redwoodfavorite/thuglife-webgl/issues"
+  },
+  "homepage": "https://github.com/redwoodfavorite/thuglife-webgl",
+  "dependencies": {
+    "babelify": "^6.1.2"
+  }
+}

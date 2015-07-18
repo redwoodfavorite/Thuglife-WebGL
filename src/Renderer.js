@@ -8,6 +8,8 @@ function Renderer(options) {
 
 	this.ctx = this.canvas.getContext('webgl');
 
+	if (options.extensions) getExtensions.call(this, options.extensions);
+
 	this.shaderProgram = createProgram.call(this, options.fragmentShader, options.vertexShader);
 	if (options.attributes) this.attributeLocations = initAttributes.call(this, options.attributes);
 	if (options.uniforms) this.uniformLocations = initUniforms.call(this, options.uniforms);
@@ -36,8 +38,13 @@ Renderer.prototype.drawArrays = function drawArrays(drawType, stride) {
 	this.ctx.drawArrays(this.ctx[drawType], stride || 0, this.boundArrayBuffer.numItems);
 };
 
-Renderer.prototype.drawElements = function drawElements(drawType, offset) {
-	this.ctx.drawElements(this.ctx[drawType], this.boundIndexBuffer.numItems, this.ctx.UNSIGNED_SHORT, offset || 0);
+Renderer.prototype.drawElements = function drawElements(drawType, offset, type) {
+	this.ctx.drawElements(
+		this.ctx[drawType],
+		this.boundIndexBuffer.numItems,
+		this.ctx.UNSIGNED_SHORT || this.ctx[type],
+		offset || 0
+	);
 };
 
 Renderer.prototype.disableAttribute = function disableAttribute(key) {
@@ -157,7 +164,7 @@ Renderer.prototype.setAttribute = function setAttribute(attributeKey) {
 
 Renderer.prototype.setBufferData = function setBufferData(key, data, size) {
 	var buffer = this.bindBuffer(key);
-	var data = buffer.isIndex ? new Uint16Array(data) : new Float32Array(data);
+	var data = data.slice ? (buffer.isIndex ? new Uint16Array(data) : new Float32Array(data)) : data;
 
 	this.ctx.bufferData(buffer.target, data, this.ctx.STATIC_DRAW);
 
@@ -207,6 +214,14 @@ Renderer.prototype.updateSize = function updateSize(width, height) {
 	this.height = height;
 }
 
+function getExtensions(extensions) {
+	var available = this.ctx.getSupportedExtensions();
+	for (var i = 0; i < extensions.length; i++) {
+		if (this.ctx.getExtension(extensions[i]) == null)
+			console.warn(`Extension ${extensions[i]} is not available!`);
+	}
+}
+
 function initAttributes(attributes) {
 	var locations = {};
 	var attributeName;
@@ -242,8 +257,8 @@ function createProgram(fSource, vSource) {
 	var shaderProgram;
 	var ctx = this.ctx;
 
-    vertexShader = ctx.createShader(ctx.VERTEX_SHADER);
-    fragmentShader = ctx.createShader(ctx.FRAGMENT_SHADER);
+    var vertexShader = ctx.createShader(ctx.VERTEX_SHADER);
+    var fragmentShader = ctx.createShader(ctx.FRAGMENT_SHADER);
 
     ctx.shaderSource(vertexShader, vSource);
     ctx.compileShader(vertexShader);
